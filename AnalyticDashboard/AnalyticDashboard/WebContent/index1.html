@@ -1,0 +1,506 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>
+	Public Safety Dashboard Portal
+</title>
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ek+Mukta">
+<style type="text/css">
+ 
+
+</style>
+
+<script src="js/dataframe.js"></script>
+<script src="js/windowSize.js"></script>
+<script>
+
+var DataFrame = dfjs.DataFrame;
+function scrollHeader() {
+	var div = document.getElementById("d1");
+	var parentDiv = document.getElementById("parent-header");
+	parentDiv.style.left = "-"+div.scrollLeft+"px";
+}
+
+window.onload = function () {
+	var datasetId = location.search.split('dataSetId=')[1]
+	var dimension = getWindowDimension().split("||");
+	console.log(dimension);
+	var height = dimension[0];
+	var parentDiv = document.getElementById("parent-header");
+	var resource = "";
+	if(typeof datasetId == 'undefined' || datasetId == '1') {
+		resource = 'resources/Building_Violations.csv';
+	} else if(datasetId == '2') {
+		resource = 'resources/NYC 2015 Felony.csv';
+	} else if(datasetId == '3') {
+		resource = 'resources/LACrimes2013Zip.csv';
+	} else if(datasetId == '4') {
+		resource = 'resources/Seattle_Police_Department_Police_Report_Incident.csv';
+	} else if(datasetId == '5') {
+		resource = 'resources/KCPD_Crime_Data_2009_Final.csv';
+	}
+	DataFrame.fromCSV(resource).then(df => {
+		var columnArr = df.listColumns();
+		var columnCount = 1;
+		// ID Column
+		var div = document.createElement("div");
+		var className = "data-t1-c"+columnCount;
+		div.classList.add(className);
+		
+		for(var i = 0; i<columnArr.length; i++) {
+			var div = document.createElement("div");
+			div.classList.add("data-th");
+			if(columnArr == 1) {
+				div.classList.add("data-th-first");
+				div.classList.add("data-t1-c1");
+			} else {
+				var className = "data-t1-c"+columnCount;
+				div.classList.add(className);
+			}
+			columnCount++;
+			var span = document.createElement("span");
+			span.classList.add("data-container");
+			
+			var divNameWrap = document.createElement("div");
+			divNameWrap.classList.add("data-name-combine");
+			
+			var spanName = document.createElement("span");
+			spanName.classList.add("data-th-name");
+			spanName.innerHTML = columnArr[i];
+			divNameWrap.appendChild(spanName);
+			span.appendChild(divNameWrap);
+			div.appendChild(span);
+			parentDiv.appendChild(div);
+		}
+		var rowCount = 1;
+		var topMargin = 0;
+		var dataArray = df.toArray();
+		var dataContentParentDiv = document.getElementById("parent-data");
+		for(var i = 0; i < 1000; i++) {
+			var div = document.createElement("div");
+			div.id = "data-t1-r"+rowCount;
+			div.classList.add("data-tr");
+			//div.style.top = topMargin+"px";
+			
+			var singleRowArray = dataArray[i];
+			columnCount = 1;
+			for(var j = 0; j < singleRowArray.length; j++) {
+				var innerDiv = document.createElement("div");
+				innerDiv.classList.add("data-td");
+				innerDiv.classList.add("data-t1-c"+columnCount);
+				innerDiv.classList.add("align-left");
+				innerDiv.style.display = "table-cell";
+				innerDiv.innerHTML = singleRowArray[j];
+				innerDiv.title = singleRowArray[j];
+				div.appendChild(innerDiv);
+				columnCount++;
+			}
+			dataContentParentDiv.appendChild(div);
+			//topMargin = topMargin + 25;
+			rowCount++;
+		}
+		
+		
+	});
+}
+
+</script>
+<style>
+	.data-table {
+		height : 100%;
+		position : relative;
+		/* overflow : hidden; */  
+	}
+	.data-table-locked {
+		left: 0;
+    	position: absolute;
+    	z-index: -1;
+	}
+	.data-table-render {
+		left: 0;
+	    position: absolute;
+	    top: 0;
+	    width: 100%;
+	}
+	.data-table-scrolls {
+		position: relative;
+    	overflow-y: scroll;
+    	overflow-x: scroll;
+	}
+	.data-table-inside {
+		background-color: #ffffff;
+		position: absolute;
+	    top: 0;
+	    left: 0;
+	    z-index: 0;
+	}
+	.table-top {
+		position : relative;
+	}
+	.table-header-scroll {
+		position : relative;
+		overflow : hidden;
+		background : #e8e8e8;
+	}
+	.table-header-fix {
+		height : 2.1em;
+		position : absolute;
+		z-index : 1;
+		top : 0;
+	}
+	.data-th {
+		border-left : solid 1px #e2e2e2;
+		overflow : hidden;
+		height : 2.1em;
+		float : left;
+		padding : 0.3333em;
+		position : relative;
+	}
+	div.data-th-first {
+		padding-left : 0.5em;
+		border-left : none;
+	}
+	.data-th .data-container {
+		font-size: 0.8em;
+	    height: 1.6667em;
+    	left: 12px;
+	    line-height: 1;
+    	overflow: hidden;
+	    position: absolute;
+    	text-overflow: ellipsis;
+	    top: 3px;
+	    padding-top : 4px;
+    	width: auto;
+	}
+	.data-th .data-name-combine {
+		height: 1.6667em;
+	    background-color: #e8e8e8;
+    	padding-right: 5px;
+	}
+	.data-th .data-th-name {
+		position : relative;
+		top : 3px;
+		font-size : 1.2em;
+		
+	}
+	.data-t1-c1 {
+		width : 95px;
+	}
+	.data-t1-c2 {
+		width : 291px;
+	}
+	.data-t1-c3 {
+		width : 187px;
+	}
+	.data-t1-c4 {
+		width : 204px;
+	}
+	.data-t1-c5 {
+		width : 203px;
+	}
+	.data-t1-c6 {
+		width : 240px;
+	}
+	.data-t1-c7 {
+		width : 352px;
+	}
+	.data-t1-c8 {
+		width : 316px;
+	}
+	.data-t1-c9 {
+		width : 436px;
+	}
+	.data-t1-c10 {
+		width : 328px;
+	}
+	.data-t1-c11 {
+		width : 171px;
+	}
+	.data-t1-c12 {
+		width : 218px;
+	}
+	.data-t1-c13 {
+		width : 210px;
+	}
+	.data-t1-c14 {
+		width : 210px;
+	}
+	.data-t1-c15 {
+		width : 234px;
+	}
+	.data-t1-c16 {
+		width : 229px;
+	}
+	.data-t1-c17 {
+		width : 184px;
+	}
+	.data-t1-c18 {
+		width : 193px;
+	}
+	.data-t1-c19 {
+		width : 130px;
+	}
+	.data-t1-c20 {
+		width : 196px;
+	}
+	.data-t1-c21 {
+		width : 318px;
+	}
+	.data-t1-c22 {
+		width : 201px;
+	}
+	.outer-table {
+		background-color: white;
+	    border: 1px solid #cecece;
+	    border-left: 0;
+	    border-right: 0;
+	    position: relative;
+	}
+	.inner-table {
+		/* overflow : hidden; */
+		position : relative;
+	}
+	.renderTypeNode .renderContent {
+		position : relative;
+	}
+	.table-locked-scrolls {
+		background-color: #ffffff;
+		left: 0;
+	    overflow: hidden;
+	    position: absolute;
+	    top: 0;
+	    z-index: 21;
+	}
+	.table-inside {
+		background-color: #ffffff;
+	}
+	.table-render {
+		left: 0;
+    	position: absolute;
+	    top: 0;
+    	width: 100%;
+	}
+	.data-tr {
+    	position: relative;
+	    overflow: hidden;
+    	z-index: 0;
+	}
+	#data-t1 .table-inside .data-tr {
+    	left: 73px;
+	}
+	#data-t1 .data-tr {
+    	height: 25px;
+	}
+	.data-td.align-right {
+ 	   text-align: right;
+	}
+	.data-td.align-left {
+ 	   text-align: left;
+	}
+	.data-td {
+		height: 1.3333em;
+		font-size: 1.0em;
+		border-bottom: solid 1px #d0d0d0;
+	    border-left: solid 1px #e2e2e2;
+	    line-height: 1.3333em;
+    	padding: 0.3333em;
+    	position: relative;
+    	float: left;
+   		overflow: hidden;
+    	white-space: nowrap;
+    	-moz-user-select: none;
+	    -khtml-user-select: none;
+    	user-select: none;
+    	cursor: default;
+	}
+</style>
+<style type="text/css">
+#mainTitle {
+	color: #FFFFFF;
+    font-size: 1.3em;
+    font-weight: normal;
+    left: 5em;
+    letter-spacing: 1px;
+    position: absolute;
+    top: 0.75em;
+}
+.clearfix:after {
+    display:block;
+    clear:both;
+}
+ 
+/*----- Menu Outline -----*/
+.menu-wrap {
+    /* width:100%;
+     box-shadow:0px 1px 3px rgba(0,0,0,0.2); 
+     background:#3e3436; 
+    position : relative; */
+    
+    /*background-color: #3e3436;*/
+    background-color: #ffffff;
+    border-top: 1px solid #cecece;
+    min-height: 7em;
+    position: relative;
+}
+ 
+.menu {
+	position : absolute;
+    width:800px;
+    margin-top : 9px;
+    margin-left: 300px;
+}
+ 
+.menu li {
+    margin:0px;
+    list-style:none;
+    font-family:'Ek Mukta';
+}
+ 
+.menu a {
+    transition:all linear 0.15s;
+    color:#919191;
+}
+ 
+.menu li:hover > a, .menu .current-item > a {
+    text-decoration:none;
+    color:#be5b70;
+}
+ 
+.menu .arrow {
+    font-size:11px;
+    line-height:0%;
+}
+ 
+/*----- Top Level -----*/
+.menu > ul > li {
+    float:left;
+    display:inline-block;
+    position:relative;
+    font-size:19px;
+}
+ 
+.menu > ul > li > a {
+    padding:10px 55px;
+    display:inline-block;
+    text-shadow:0px 1px 0px rgba(0,0,0,0.4);
+}
+ 
+.menu > ul > li:hover > a, .menu > ul > .current-item > a {
+    background:#2e2728;
+}
+ 
+/*----- Bottom Level -----*/
+.menu li:hover .sub-menu {
+    z-index:21;
+    opacity:1;
+}
+ 
+.sub-menu {
+    width:160%;
+    padding:5px 0px;
+    position:absolute;
+    top:100%;
+    left:0px;
+    z-index:-1;
+    opacity:0;
+    transition:opacity linear 0.15s;
+    box-shadow:0px 2px 3px rgba(0,0,0,0.2);
+    background:#2e2728;
+}
+ 
+.sub-menu li {
+    display:block;
+    font-size:16px;
+}
+ 
+.sub-menu li a {
+    padding:5px 30px;
+    display:block;
+}
+ 
+.sub-menu li a:hover, .sub-menu .current-item a {
+    background:#3e3436;
+}
+</style>
+</head>
+<body>
+	<div class="menu-wrap">
+	<img alt="" src="images/OpenData.jpg" height="100px;" width="330px;" style="float: left">
+    <nav class="menu" style = "float : right;">
+    	<ul class="clearfix">
+    		<li><a href="#">Manage</a></li>
+            <li>
+                <a href="#">Datasets <span class="arrow">&#9660;</span></a>
+ 
+                <ul class="sub-menu">
+                    <li><a href="index1.html?dataSetId=1">Chicago Building Violation</a></li>
+                    <li><a href="index1.html?dataSetId=2">NewYork Felony</a></li>
+                    <li><a href="index1.html?dataSetId=3">LosAngeles 2013 Crime Data</a></li>
+                    <li><a href="index1.html?dataSetId=4">Seattle Police Report Incidents</a></li>
+                    <li><a href="index1.html?dataSetId=5">Kansas 2009 Crime Data</a></li>
+                </ul>
+            </li>
+            <li><a href="#">Filter</a></li>
+            <li><a href="#">Visualize</a></li>
+        </ul>
+    </nav> 
+</div>
+	
+	<div class="outer-table"> <!-- Div 1 Full Height -->
+		<div class = "inner-table" style="height: 388px;"> <!-- Div 2 Full Height -->
+			<div class="fullHeight renderTypeNode gridRenderType" data-rendertype="table" aria-label="Building Violations (table)" style="height:388px;"> <!-- Div 3 Full Height -->
+				<div class="renderContent fullHeight scrollContent data-table" id="blist-t1" style="height: 388px; cursor: auto;" id="blist-t1"> <!-- Div 4 Full Height -->
+					
+					<!-- 
+						Header Start  
+					-->
+					<div class="table-top">
+						<div class="table-header-scroll" style="height: 37px;">
+							<div class="table-header-fix" style="width: 5336px; left: 0px;" id="parent-header">
+								
+							</div>
+						</div>	
+					</div>
+					<!--
+						Header End 
+					 -->
+				
+					<!--
+						IDS - Start 
+					 -->
+				
+				<!-- 
+					<div class="table-locked-scrolls" style="width: 73px; height: 158px;"> -  Div 5 Only Header - This is a comment 
+					 	<div class="data-table-locked" style="top: 37px;" style="top: 37px; width: 73px; height: 2.05988e +07px;">
+					 		<div class="data-table-render" style="top: 0px; height: 200px;" id = "id-render">
+								
+							</div>
+						</div>
+					</div>
+				-->	
+					<!--
+						IDS - End
+					 -->
+					
+					<!-- 
+						Actual Data Start
+					 -->
+					 
+					 <div class="data-table-scrolls" style="height: 600px; width: 1525px;" onscroll="scrollHeader()" id="d1">
+					 	<div class="data-table-inside" style="width: 5200px; height: 35000px;top:0px;">
+					 		<div class="data-table-render" id="parent-data" style="height: 35000px;">
+					 			
+					 		</div>
+					 	</div>
+					 </div>
+					<!-- 
+						Actual Data End
+					 --> 
+					 
+				</div>	
+			</div>
+		</div>	
+		</div>
+</body>
+</html>
